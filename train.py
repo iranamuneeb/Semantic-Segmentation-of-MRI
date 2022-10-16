@@ -10,16 +10,12 @@ Created on Sat Oct 15 19:08:39 2022
 import os
 import numpy as np
 from genarator import imageLoader
-
-#import tensorflow as tf
 import keras
 from matplotlib import pyplot as plt
 import glob
 import random
 
 
-
-####################################################
 train_img_dir = "BraTS2020_TrainingData/input_data_128/train/images/"
 train_mask_dir = "BraTS2020_TrainingData/input_data_128/train/masks/"
 
@@ -51,6 +47,7 @@ plt.title('Mask')
 plt.show()
 
 #############################################################
+
 #Optional step of finding the distribution of each class and calculating appropriate weights
 #Alternatively you can just assign equal weights and see how well the model performs: 0.25, 0.25, 0.25, 0.25
 
@@ -74,6 +71,7 @@ label_2 = df['1'].sum()
 label_3 = df['3'].sum()
 total_labels = label_0 + label_1 + label_2 + label_3
 n_classes = 4
+
 #Class weights claculation: n_samples / (n_classes * n_samples_for_class)
 wt0 = round((total_labels/(n_classes*label_0)), 2) #round to 2 decimals
 wt1 = round((total_labels/(n_classes*label_1)), 2)
@@ -85,6 +83,7 @@ wt3 = round((total_labels/(n_classes*label_3)), 2)
 #These weihts can be used for Dice loss 
 
 ##############################################################
+
 #Define the image generators for training and validation
 
 train_img_dir = "BraTS2020_TrainingData/input_data_128/train/images/"
@@ -98,7 +97,7 @@ train_mask_list = os.listdir(train_mask_dir)
 
 val_img_list=os.listdir(val_img_dir)
 val_mask_list = os.listdir(val_mask_dir)
-##################################
+
 
 ########################################################################
 batch_size = 2
@@ -137,6 +136,7 @@ plt.show()
 
 
 ###########################################################################
+
 #Define loss, metrics and optimizer to be used for training
 
 wt0, wt1, wt2, wt3 = 0.25,0.25,0.25,0.25
@@ -153,6 +153,7 @@ LR = 0.0001
 optim = keras.optimizers.Adam(LR)
 
 #######################################################################
+
 #Fit the model 
 
 steps_per_epoch = len(train_img_list)//batch_size
@@ -205,7 +206,9 @@ plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
+
 #################################################
+
 from keras.models import load_model
 
 #Load model for prediction or continue training
@@ -214,10 +217,12 @@ from keras.models import load_model
 #The following gives an error: Unknown loss function: dice_loss_plus_1focal_loss
 #This is because the model does not save loss function and metrics. So to compile and 
 #continue training we need to provide these as custom_objects.
+
 my_model = load_model('saved_models/brats_3d_50epochs_simple_unet_weighted_dice.hdf5')
 
 #So let us add the loss as custom object... but the following throws another error...
 #Unknown metric function: iou_score
+
 my_model = load_model('saved_models/brats_3d_50epochs_simple_unet_weighted_dice.hdf5', 
                       custom_objects={'dice_loss_plus_1focal_loss': total_loss})
 
@@ -234,6 +239,7 @@ history2=my_model.fit(train_img_datagen,
           validation_data=val_img_datagen,
           validation_steps=val_steps_per_epoch,
           )
+
 #################################################
 
 #For predictions you do not need to compile the model, so ...
@@ -244,6 +250,7 @@ my_model = load_model('saved_models/brats_3d_100epochs_simple_unet_weighted_dice
 #Verify IoU on a batch of images from the test dataset
 #Using built in keras function for IoU
 #Only works on TF > 2.0
+
 from keras.metrics import MeanIoU
 
 batch_size=8 #Check IoU for a batch of images
@@ -263,6 +270,7 @@ IOU_keras.update_state(test_pred_batch_argmax, test_mask_batch_argmax)
 print("Mean IoU =", IOU_keras.result().numpy())
 
 #############################################
+
 #Predict on a few test images, one at a time
 #Try images: 
 img_num = 82
