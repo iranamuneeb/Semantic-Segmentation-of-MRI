@@ -46,15 +46,7 @@ Then the Unet model creats a merged layer upon which the model is trained with t
 > **Note**
 > For a detailed explaination please wait for our paper
 
-> Our system took 8 hours to train one epoch with CPU utilization. And the dataset takes upto 100GB of space. 
-
 > A web application supporting this ML model will be live soon as well. 
-
-## Credits
-<b> The Lofrzz </B>
-* Rana Muneeb Asad 
-* Taimoor Wajid
-* Farjad Khan
 
 > **Reach Out To us**
 > You can reach out to us on muneebasad.24@gmail.com for any querry
